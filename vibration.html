@@ -1,0 +1,131 @@
+<html>
+  <head>
+    <style>
+     h1 {
+       font-size:1em;
+     }
+     .red {
+       color: red;
+     }
+     .green {
+       color: green;
+     }
+     .container {
+       display: flex;
+       flex-direction: row;
+     }
+     .container > div {
+       padding: 5px;
+       display: flex;
+       flex-direction: column;
+       justify-content: flex-start;
+       align-items: flex-start;
+     }
+     .container > div > * {
+       margin: 5px;
+     }
+
+     .physics {
+       border: 1px solid #ddd;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: space-around;
+       padding-bottom: 10px;
+     }
+
+     .ranger {
+       padding: 10px;
+       display: flex;
+       flex-direction: row;
+     }
+
+     .ranger > div {
+       display: flex;
+       flex-direction: column;
+       justify-content: space-evenly;
+       }
+
+    </style>
+  </head>
+  <body>
+    <h1>propagation of vibrations through a 2D sheet (tested on Chrome)</h1>
+    <div class='container'>
+      <canvas id='canvas'>
+      </canvas>
+      <div>
+        <div>Tick: <span id='tick'></span></div>
+        <input type='button' id='btn-restart'  value='restart'     onClick='restart();'/>
+        <input type='button' id='btn-pauseres' value='pause'       onClick='pauseResume();'/>
+        <input type='button' id='btn-step'     value='manual step' onClick='manualStep();'/>
+        <div class='physics'>
+          <div class='ranger'>
+            <div>
+              <div><label for='mass-i'>Mass of each particle</label></div>
+              <div><label for='kappa-i'>Stiffness of each spring</label></div>
+              <div><label for='damping-i'>Damping</label></div>
+            </div>
+            <div>
+              <div>
+                <input type='range' id='mass-i' min=1 max=50 step='0.01'/>
+                <span id='mass-d'></span>
+              </div>
+              <div>
+                <input type='range' id='kappa-i' min=0.2 max=10 step='0.01'/>
+                <span id='kappa-d'></span>
+              </div>
+              <div>
+                
+                <input type='range' id='damping-i' min=0 max=1 step=0.01 onchange="setDamping(this.value)"/>
+                <span id='damping-d'></span>
+              </div>
+            </div>
+          </div>
+          <div> <input id='restore-defaults' type='button' value='restore defaults'/></div>
+        </div>
+      </div>
+    </div>
+    <p>This is a dead-simple simulation in plain JavaScript of the propagation of a vibration
+      through a 2-D sheet of material. I was inspired to write it after reading an article
+      on sound waves. The simulation is entirely 2D and the axis of the vibration lies
+      completely on the plane.
+    </p>
+    <p>
+      The <span class='red'>red</span> particle is the source of the vibration.
+      Particles painted <span class='green'>green</span> are not special in any way nor do they
+      represent a barrier to the vibration; they are simply painted
+      green to allow one to observe that there is no sustained movement of
+      particles; all particles simply oscillate about their position.
+    </p>
+    <p>
+      Each particle is simulated to be connected with invisible springs
+      to each of its neighbouring particles in all directions (vertically, horizontally
+      and diagonally). So a particle in the middle of the throng is attached with tiny
+      springs to eight (8) of its neighbours, the four particles at the four corners
+      of the rectangular grid have only three (3) neighbours each. Particles along the
+      sides of the grid have five (5) neighbours.
+    </p>
+    <p>
+      The simulation required careful calibration of the 'mass' of each particle, the
+      Hooke's law constant <i>k</i> (which models the stiffness of each spring) as well
+      as the <span class='red'>red</span> particle's vibration parameters (amplitude and frequency).
+      Slightly different values cause the entire thing to descend to chaos rapidly.
+    </p>
+    <p>Finally, there is also some damping involved to represent energy loss; without
+      damping, the entire vibration would go one for ever without
+      requiring the sustained vibration
+      source provided by the <span class='red'>red</span> particle.
+      Also, without damping, the energy in the system
+      keeps building up (given a sustained vibration source) and we get chaos faster.
+    </p>
+    <p> There is also another emergent effect at play
+      which is that the entire sheet of material seems to be drifting downwards over time.
+      Maybe the drifting is the effect of floating point arithmetic precision
+      errors building up over time. I also speculate that the chaos you get under
+      different parameters is the result of some synchronization
+      happenning that throws things way out of balance.
+    </p>
+    <script src='math.js'></script>        
+    <script src='vibration.js'></script>
+  </body>
+</html>
