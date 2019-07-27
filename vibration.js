@@ -4,10 +4,17 @@ const N = 50;
 
 // physics simulation default parameters
 let DEFAULTS = {
-    MASS: 1.7,
-    KAPPA: 0.5,
-    DAMPING: 0.03
+    MASS: 3,
+    KAPPA: 0.2,
+    DAMPING: 0.01
 };
+
+const massInput      = document.getElementById('mass-i');
+const massDisplay    = document.getElementById('mass-d');
+const kappaInput     = document.getElementById('kappa-i');
+const kappaDisplay   = document.getElementById('kappa-d');
+const dampingInput   = document.getElementById('damping-i');
+const dampingDisplay = document.getElementById('damping-d');
 
 
 // physics simulation live parameters
@@ -15,34 +22,36 @@ let MASS    = DEFAULTS.MASS;
 let KAPPA   = DEFAULTS.KAPPA;
 let DAMPING = DEFAULTS.DAMPING;
 
+function restoreDefaults() {
+    MASS    = DEFAULTS.MASS;
+    KAPPA   = DEFAULTS.KAPPA;
+    DAMPING = DEFAULTS.DAMPING;
+    massInput.value         = MASS;
+    massDisplay.textContent = MASS;
+    kappaInput.value         = KAPPA;
+    kappaDisplay.textContent = KAPPA;
+    dampingInput.value         = DAMPING;
+    dampingDisplay.textContent = DAMPING;
+}
 
-const massInput   = document.getElementById('mass-i');
-const massDisplay = document.getElementById('mass-d');
-massInput.value = MASS;
-massDisplay.textContent = MASS;
+restoreDefaults();
+
 massInput.addEventListener('input', function() {
     MASS = massInput.value;
     massDisplay.textContent = MASS;
 });
 
 
-const kappaInput   = document.getElementById('kappa-i');
-const kappaDisplay = document.getElementById('kappa-d');
-kappaInput.value = KAPPA;
-kappaDisplay.textContent = KAPPA;
 kappaInput.addEventListener('input', function() {
     KAPPA = kappaInput.value;
     kappaDisplay.textContent = KAPPA;
 });
 
-// TODO i AM LEFT to do the same for damping and to write the restoer fdefault function
+dampingInput.addEventListener('input', function() {
+    DAMPING = dampingInput.value;
+    dampingDisplay.textContent = DAMPING;
+});
     
-
-
-function setDamping(damping) {
-    DAMPING = damping;
-}
-document.getElementById('damping-i').value = DAMPING;
 
           
 function assert(cond, msg) {
@@ -181,16 +190,9 @@ function Ball(i, j) {
     };
     this.move = function(n) {
         if ((this.i === N-1) && (this.j === N-1)) {
-            // vibration of the red particle
-            // vibration model 1
-            /*
-            this.dx = (n % 20) / 2;
-            this.dy = (n % 20) / 2;
-             */
-            // vibration model 2
-            const CYCLE = 30;
+            const CYCLE = 40;
             const AMPLITUDE = 15;
-            const PHASE_CUTOFF = 0.7;
+            const PHASE_CUTOFF = 0.5;
             const increasing = ((n % CYCLE) < CYCLE*PHASE_CUTOFF)?true:false;
             const stepIncreasing =  AMPLITUDE/(CYCLE*PHASE_CUTOFF);
             const stepDecreasing = -AMPLITUDE/(CYCLE*(1-PHASE_CUTOFF));
@@ -201,9 +203,14 @@ function Ball(i, j) {
             this.dx += this.vx;
             this.dy -= this.vy; // y coordinate is upside-down because computer graphics
 
-            // damping
-            this.vx = (1-DAMPING)*this.vx;
-            this.vy = (1-DAMPING)*this.vy;
+            // damping - E=(1/2)*m*v^2 => v = Math.sqrt ( 2*E / m )
+            const currentEnergy = 0.5*MASS*(sq(this.vx)+sq(this.vy));
+            const newEnergy = (1-DAMPING)*currentEnergy;
+            const newVelocityMeasure = Math.sqrt( (2*newEnergy) / MASS );
+            const currentVelocity = new Vector(this.vx, this.vy);
+            const newVelocity = currentVelocity.normalize(newVelocityMeasure);
+            this.vx = newVelocity.x;
+            this.vy = newVelocity.y;
         }
     };
 }
@@ -234,7 +241,6 @@ function init() {
 
 let n = 0;
 function life() {
-    document.getElementById('damping-d').textContent = DAMPING;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     document.getElementById('tick').textContent = n;
     for (let b = 0; b < balls.length; b++) {

@@ -75,13 +75,12 @@
                 <span id='kappa-d'></span>
               </div>
               <div>
-                
-                <input type='range' id='damping-i' min=0 max=1 step=0.01 onchange="setDamping(this.value)"/>
+                <input type='range' id='damping-i' min=0 max=1 step=0.01 />
                 <span id='damping-d'></span>
               </div>
             </div>
           </div>
-          <div> <input id='restore-defaults' type='button' value='restore defaults'/></div>
+          <div> <input id='restore-defaults' type='button' value='restore defaults' onClick='restoreDefaults();'/></div>
         </div>
       </div>
     </div>
@@ -108,7 +107,8 @@
     <p>
       The simulation required careful calibration of the 'mass' of each particle, the
       Hooke's law constant <i>k</i> (which models the stiffness of each spring) as well
-      as the <span class='red'>red</span> particle's vibration parameters (amplitude and frequency).
+      as the <span class='red'>red</span> particle's vibration parameters (amplitude, frequency
+      and speed in both directions).
       Slightly different values cause the entire thing to descend to chaos rapidly.
     </p>
     <p>Finally, there is also some damping involved to represent energy loss; without
@@ -120,10 +120,14 @@
     </p>
     <p> There is also another emergent effect at play
       which is that the entire sheet of material seems to be drifting downwards over time.
-      Maybe the drifting is the effect of floating point arithmetic precision
-      errors building up over time. I also speculate that the chaos you get under
-      different parameters is the result of some synchronization
-      happenning that throws things way out of balance.
+      I have an explanation for that but I won't bother explaining it (hint: it's got to do
+      with the nature of the vibration). I could "fix" that but I kinda like the drifting
+      and think it's interesting and cute.
+    </p>
+    <p>The chaos you get under
+      different parameter values though, that, I can't explain. I speculate it may be the result
+      of some synchronization happenning that throws things way out of balance (or some
+      bug in how I model the springs and the forces they generate).
     </p>
     <script src='math.js'></script>        
     <script src='vibration.js'></script>
